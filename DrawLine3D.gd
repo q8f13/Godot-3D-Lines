@@ -55,43 +55,65 @@ func DrawRay(Start, Ray, LineColor, Time = 0.0):
 func DrawCube(Center, HalfExtents, LineColor, Time = 0.0):
 	#Start at the 'top left'
 	var LinePointStart = Center
-	LinePointStart.x -= HalfExtents
-	LinePointStart.y += HalfExtents
-	LinePointStart.z -= HalfExtents
+	LinePointStart.x -= HalfExtents.x
+	LinePointStart.y += HalfExtents.y
+	LinePointStart.z -= HalfExtents.z
 	
 	#Draw top square
-	var LinePointEnd = LinePointStart + Vector3(0, 0, HalfExtents * 2.0)
+	var LinePointEnd = LinePointStart + Vector3(0, 0, HalfExtents.z * 2.0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	LinePointStart = LinePointEnd
-	LinePointEnd = LinePointStart + Vector3(HalfExtents * 2.0, 0, 0)
+	LinePointEnd = LinePointStart + Vector3(HalfExtents.x * 2.0, 0, 0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	LinePointStart = LinePointEnd
-	LinePointEnd = LinePointStart + Vector3(0, 0, -HalfExtents * 2.0)
+	LinePointEnd = LinePointStart + Vector3(0, 0, -HalfExtents.z * 2.0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	LinePointStart = LinePointEnd
-	LinePointEnd = LinePointStart + Vector3(-HalfExtents * 2.0, 0, 0)
+	LinePointEnd = LinePointStart + Vector3(-HalfExtents.x * 2.0, 0, 0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	
 	#Draw bottom square
-	LinePointStart = LinePointEnd + Vector3(0, -HalfExtents * 2.0, 0)
-	LinePointEnd = LinePointStart + Vector3(0, 0, HalfExtents * 2.0)
+	LinePointStart = LinePointEnd + Vector3(0, -HalfExtents.y * 2.0, 0)
+	LinePointEnd = LinePointStart + Vector3(0, 0, HalfExtents.z * 2.0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	LinePointStart = LinePointEnd
-	LinePointEnd = LinePointStart + Vector3(HalfExtents * 2.0, 0, 0)
+	LinePointEnd = LinePointStart + Vector3(HalfExtents.x * 2.0, 0, 0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	LinePointStart = LinePointEnd
-	LinePointEnd = LinePointStart + Vector3(0, 0, -HalfExtents * 2.0)
+	LinePointEnd = LinePointStart + Vector3(0, 0, -HalfExtents.z * 2.0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	LinePointStart = LinePointEnd
-	LinePointEnd = LinePointStart + Vector3(-HalfExtents * 2.0, 0, 0)
+	LinePointEnd = LinePointStart + Vector3(-HalfExtents.x * 2.0, 0, 0)
 	DrawLine(LinePointStart, LinePointEnd, LineColor, Time);
 	
 	#Draw vertical lines
 	LinePointStart = LinePointEnd
-	DrawRay(LinePointStart, Vector3(0, HalfExtents * 2.0, 0), LineColor, Time)
-	LinePointStart += Vector3(0, 0, HalfExtents * 2.0)
-	DrawRay(LinePointStart, Vector3(0, HalfExtents * 2.0, 0), LineColor, Time)
-	LinePointStart += Vector3(HalfExtents * 2.0, 0, 0)
-	DrawRay(LinePointStart, Vector3(0, HalfExtents * 2.0, 0), LineColor, Time)
-	LinePointStart += Vector3(0, 0, -HalfExtents * 2.0)
-	DrawRay(LinePointStart, Vector3(0, HalfExtents * 2.0, 0), LineColor, Time)
+	DrawRay(LinePointStart, Vector3(0, HalfExtents.y * 2.0, 0), LineColor, Time)
+	LinePointStart += Vector3(0, 0, HalfExtents.z * 2.0)
+	DrawRay(LinePointStart, Vector3(0, HalfExtents.y * 2.0, 0), LineColor, Time)
+	LinePointStart += Vector3(HalfExtents.x * 2.0, 0, 0)
+	DrawRay(LinePointStart, Vector3(0, HalfExtents.y * 2.0, 0), LineColor, Time)
+	LinePointStart += Vector3(0, 0, -HalfExtents.z * 2.0)
+	DrawRay(LinePointStart, Vector3(0, HalfExtents.y * 2.0, 0), LineColor, Time)
+
+
+func DrawBoundWithRotation(bound:AABB, rotation, LineColor, Time = 0.0):
+	var b_center = lerp(bound.position, bound.end, 0.5)
+	var points = PoolVector3Array()
+	points.resize(8)
+	for i in range(8):
+		points[i] = bound.get_endpoint(i) - b_center
+	# two faces
+	DrawLine(b_center + rotation * points[0], b_center + rotation * points[2], LineColor, Time)
+	DrawLine(b_center + rotation * points[0], b_center + rotation * points[4], LineColor, Time)
+	DrawLine(b_center + rotation * points[2], b_center + rotation * points[6], LineColor, Time)
+	DrawLine(b_center + rotation * points[4], b_center + rotation * points[6], LineColor, Time)
+	DrawLine(b_center + rotation * points[1], b_center + rotation * points[3], LineColor, Time)
+	DrawLine(b_center + rotation * points[1], b_center + rotation * points[5], LineColor, Time)
+	DrawLine(b_center + rotation * points[3], b_center + rotation * points[7], LineColor, Time)
+	DrawLine(b_center + rotation * points[7], b_center + rotation * points[5], LineColor, Time)
+	# connect them
+	DrawLine(b_center + rotation * points[2], b_center + rotation * points[3], LineColor, Time)
+	DrawLine(b_center + rotation * points[0], b_center + rotation * points[1], LineColor, Time)
+	DrawLine(b_center + rotation * points[6], b_center + rotation * points[7], LineColor, Time)
+	DrawLine(b_center + rotation * points[4], b_center + rotation * points[5], LineColor, Time)
